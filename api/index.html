@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Meu Sistema de Fotos (Python)</title>
+  <style>
+    body { font-family: Arial; padding: 20px; text-align: center; background: #f0f2f5; }
+    button { padding: 15px 30px; font-size: 16px; cursor: pointer; background: #0070f3; color: white; border: none; border-radius: 8px; margin: 10px; }
+    button:hover { background: #005bb5; }
+    #galeria { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 30px; }
+    img { border-radius: 8px; max-width: 250px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body>
+  <h2>Meu Sistema de Laboratórios (Python)</h2>
+  
+  <button onclick="carregarFotos('COLOQUE_O_ID_DA_PASTA_AQUI')">Ver Fotos do Laboratório 1</button>
+  
+  <div id="galeria"></div>
+
+  <script>
+    async function carregarFotos(folderId) {
+      const galeria = document.getElementById('galeria');
+      galeria.innerHTML = "<h3>Carregando fotos... ⏳</h3>";
+      
+      try {
+        const resposta = await fetch(`/api/fotos?folder=${folderId}`);
+        const fotos = await resposta.json();
+        
+        if (fotos.erro) {
+          galeria.innerHTML = "Erro: " + fotos.erro;
+          return;
+        }
+        
+        if (!fotos || fotos.length === 0) {
+          galeria.innerHTML = "<h3>Nenhuma foto encontrada nessa pasta.</h3>";
+          return;
+        }
+
+        galeria.innerHTML = "";
+        fotos.forEach(foto => {
+          galeria.innerHTML += `<img src="${foto.thumbnailLink}=s400" alt="${foto.name}">`;
+        });
+      } catch (e) {
+        galeria.innerHTML = "Erro ao conectar com o sistema.";
+      }
+    }
+  </script>
+</body>
+</html>
